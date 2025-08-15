@@ -7,12 +7,58 @@
   "tags": [],
   "targets": {
     "build": {
+      "executor": "@angular-architects/native-federation:build",
+      "options": {},
+      "configurations": {
+        "production": {
+          "target": "login:esbuild:production"
+        },
+        "development": {
+          "target": "login:esbuild:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-architects/native-federation:build",
+      "options": {
+        "target": "login:serve-original:development",
+        "rebuildDelay": 0,
+        "dev": true,
+        "port": 0
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "login:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "login:build",
+        "staticFilePath": "dist/apps/login/browser",
+        "spa": true
+      }
+    },
+    "esbuild": {
       "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/login",
         "browser": "apps/login/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js",
+          "es-module-shims"
+        ],
         "tsConfig": "apps/login/tsconfig.app.json",
         "assets": [
           {
@@ -20,7 +66,9 @@
             "input": "apps/login/public"
           }
         ],
-        "styles": ["apps/login/src/styles.css"]
+        "styles": [
+          "apps/login/src/styles.css"
+        ]
       },
       "configurations": {
         "production": {
@@ -46,35 +94,20 @@
       },
       "defaultConfiguration": "production"
     },
-    "serve": {
+    "serve-original": {
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "login:build:production"
+          "buildTarget": "login:esbuild:production"
         },
         "development": {
-          "buildTarget": "login:build:development"
+          "buildTarget": "login:esbuild:development"
         }
       },
-      "defaultConfiguration": "development"
-    },
-    "extract-i18n": {
-      "executor": "@angular/build:extract-i18n",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "login:build"
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "login:build",
-        "staticFilePath": "dist/apps/login/browser",
-        "spa": true
+        "port": 4200
       }
     }
   }
